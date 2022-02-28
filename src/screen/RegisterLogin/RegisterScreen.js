@@ -1,13 +1,16 @@
-import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Modal, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Boton from "../../components/botones/Boton";
+import { Icon } from "react-native-elements";
 
 
 export default function RegisterScreen() {
+    const [registerVisible, setRegisterVisible] = useState(true)
     return (
         <View style={styles.container}>
             <View style={styles.subContainer1}>
-                <Image style={{width: '100%', height: '100%', }} source={require('../assets/icons/Study-modified.png')} resizeMode = 'contain'/>
+                <Image style={{ width: '100%', height: '100%', }} source={require('../assets/icons/Study-modified.png')} resizeMode='contain' />
             </View>
             <View style={styles.subContainer2}>
                 <View style={styles.containerBienvenida}>
@@ -16,20 +19,45 @@ export default function RegisterScreen() {
                 </View>
                 <View style={styles.containerBtn}>
                     <Boton
-                        onPress={() => console.log("hey")}
+                        onPress={() => setRegisterVisible(true)}
                         text="Create an Account"
-                        addstyle={{justifyContent: 'center'}}
+                        addstyle={{ justifyContent: 'center' }}
                         styled="yellowRegister"
                     />
                     <Boton
                         onPress={() => console.log("hey")}
                         text="Login"
-                        //addstyle={{justifyContent: 'center'}}
-                        //styled="yellowRegister"
+                    //addstyle={{justifyContent: 'center'}}
+                    //styled="yellowRegister"
                     />
                 </View>
 
             </View>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={registerVisible}
+            //onRequestClose={() => alert("Config close")}
+            >
+                <SafeAreaView style={styles.containerModal}>
+                    <View style={styles.subcontainerModal}>
+                        <View style={{ flex: 0.2, flexDirection: "row", }}>
+                            <View style={{ flex: 0.4, justifyContent: "center", paddingLeft: 30 }}>
+                                <Text style={styles.txtBienvenidaRegister}>Hello ...</Text>
+                                <Text style={[styles.txtBienvenidaRegister,{fontWeight: "bold", fontSize: 30}]}>Register</Text>
+                            </View>
+                            <View style={styles.iconoSalir}>
+                                <Icon onPress={()=>setRegisterVisible(false)} name="close-circle-outline" type="material-community" size={30} color="#EF5858"/>
+                            </View>
+
+                        </View>
+
+                    </View>
+
+                </SafeAreaView>
+
+            </Modal>
 
         </View>
     );
@@ -42,32 +70,53 @@ const styles = StyleSheet.create({
     },
     subContainer1: {
         flex: 0.4,
-       // backgroundColor: 'red'
+        // backgroundColor: 'red'
     },
     subContainer2: {
         flex: 0.6,
     },
-    containerBienvenida:{
+    containerBienvenida: {
         flex: 0.4,
         alignItems: "center",
         justifyContent: "center"
     },
-    containerBtn:{
+    containerBtn: {
         flex: 0.6,
-       // backgroundColor: 'red',
+        // backgroundColor: 'red',
         paddingHorizontal: "15%",
         justifyContent: "center",
     },
-    txtTitulo:{
+    txtTitulo: {
         color: '#EF5858',
         fontSize: 36,
         //fontFamily: ''
     },
-    txt:{
+    txt: {
         color: '#F4F4F4',
         fontSize: 19,
         paddingHorizontal: "10%",
         paddingTop: 10
-    }
-    
+    },
+    txtBienvenidaRegister:{
+        color: '#050522',
+        fontSize: 20,
+        
+    },
+    iconoSalir: {
+        flex: 0.6,
+        alignItems: "flex-end",
+        justifyContent: "center",
+        paddingRight: 30
+    },
+    containerModal:{ 
+        flex: 1, 
+        justifyContent: "flex-end" 
+    },
+    subcontainerModal:{ 
+        flex: 0.7, 
+        backgroundColor: '#FFECAA',
+        borderTopLeftRadius: 40, 
+        borderTopRightRadius: 40 
+    },
+
 })
