@@ -32,6 +32,18 @@ const getButtonStyle = color => {
           //marginBottom: hp(4),
           
         };
+      case 'btnRegister':
+        return{
+          backgroundColor: '#050522',
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 15,
+          minWidth: 10,
+          marginTop:6,
+          paddingTop: "5%",
+          marginBottom: 10,
+          paddingBottom: "5%",
+        }
       default:
         return {
           //backgroundColor: '#008DC4',
@@ -54,6 +66,12 @@ const getButtonStyle = color => {
       case 'yellowRegister':
         return {
           color: '#1B1A40',
+          fontSize: 20,
+          fontWeight: '700',
+        };
+        case 'btnRegister':
+        return {
+          color: '#FFDE69',
           fontSize: 20,
           fontWeight: '700',
         };
