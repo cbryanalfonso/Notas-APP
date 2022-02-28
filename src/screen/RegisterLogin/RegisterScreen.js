@@ -6,11 +6,106 @@ import { Icon } from "react-native-elements";
 import { Formik } from "formik";
 import { TextInput } from "react-native-paper";
 import InputTxt from "../../components/Input/InputTxt";
+import { firebase } from "@react-native-firebase/auth";
+import { firebase as db } from "@react-native-firebase/database";
 
 
 export default function RegisterScreen() {
     const [registerVisible, setRegisterVisible] = useState(false)
     const [loginVisible, setLoginVisible] = useState(true)
+    const [usuario, setUsuario] = useState('')
+
+
+
+    const uploadProfile = async (usuarios, correo, nombre, contra) => {
+        console.log("Tamos dentro ->", usuarios);
+        console.log("Tamos dentro ->", correo);
+        console.log("Tamos dentro ->", nombre);
+        console.log("Tamos dentro ->", contra);
+        db
+            .database()
+            .ref(`/Usuarios/${usuarios}`)
+            .set({
+                name: nombre,
+                email: correo,
+                password: contra,
+                uid: usuarios,
+            })
+            .then(() => {
+                // navigation.navigate('LoginScreen')
+                console.log("Lo que se sube a base de datos->")
+            }
+            )
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    const register = values => {
+        if (values.password === values.confirmPassword) {
+            if (values.email && values.password) {
+                firebase.auth()
+                    .createUserWithEmailAndPassword(values.email, values.password)
+                    .then((userCredential) => {
+                        var user = userCredential.user
+                        user.updateProfile({
+                            displayName: values.name,
+                        })
+                            .then(() => {
+                                setUsuario(user.uid)
+                                uploadProfile(user.uid, values.email, values.name, values.password)
+                            })
+                            .catch((error) => {
+                                alert(error)
+                            })
+                    })
+                    .catch(error => {
+                        // setLoader(false);
+                        var errorCode = error.code;
+                        var errorMessage = error.message;
+                        console.log(errorMessage);
+                        alert(errorMessage)
+                    });
+            } else {
+                alert("Please complete the data.")
+            }
+        } else {
+            alert("Password doesn´t match")
+        }
+    }
+    const signIn = values => {
+        if (values.email && values.password) {
+            firebase
+                .auth()
+                .signInWithEmailAndPassword(values.email, values.password)
+                .then(userCredential => {
+                    console.log("Inicio de sesión exitoso ...");
+
+                   /*  db.database().ref('Usuarios/' + getCurrentUser().uid)
+                        .update({ state: true })
+
+                    navigation.navigate('Menu') */
+                })
+                .catch(error => {
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                });
+
+            /**
+             * 
+             *  firebase
+                .database()
+                    .ref('/Usuarios')
+                    .on('value', snapshot => {
+                        console.log('User data: ', snapshot.val());
+                    })
+             */
+        } else {
+            alert('Please complete ...')
+        }
+    }
+
+
     return (
         <View style={styles.container}>
             <View style={styles.subContainer1}>
@@ -97,9 +192,9 @@ export default function RegisterScreen() {
                                             secury={true}
                                         />
                                         <Boton
-                                            onPress={() => console.log("hey")}
+                                            onPress={handleSubmit}
                                             text="Register"
-                                        //addstyle={{justifyContent: 'center'}}
+                                            //addstyle={{justifyContent: 'center'}}
                                             styled="btnRegister"
                                         />
 
@@ -108,18 +203,18 @@ export default function RegisterScreen() {
                                 )}
                             </Formik>
 
-                            
+
                         </View>
                         <View style={styles.footerModal}>
-                            <Text style={[styles.txtBienvenidaRegister, {fontSize: 16}]}>Already have an Account {' '}
-                                    <Text 
+                            <Text style={[styles.txtBienvenidaRegister, { fontSize: 16 }]}>Already have an Account {' '}
+                                <Text
                                     style={styles.txtURL}
-                                    onPress={()=>{
+                                    onPress={() => {
                                         setRegisterVisible(false)
                                         setLoginVisible(true)
 
                                     }}
-                                    >Login</Text>
+                                >Login</Text>
                             </Text>
                         </View>
 
@@ -135,7 +230,7 @@ export default function RegisterScreen() {
             //onRequestClose={() => alert("Config close")}
             >
                 <SafeAreaView style={styles.containerModal}>
-                    <View style={[styles.subcontainerModal,{flex: 0.5}]}>
+                    <View style={[styles.subcontainerModal, { flex: 0.5 }]}>
                         <View style={{ flex: 0.3, flexDirection: "row", }}>
                             <View style={{ flex: 0.4, justifyContent: "center", paddingLeft: 30 }}>
                                 <Text style={styles.txtBienvenidaRegister}>Welcome Back!!!</Text>
@@ -149,18 +244,16 @@ export default function RegisterScreen() {
                         <View style={styles.containerForm}>
                             <Formik
                                 initialValues={{
-                                    name: '',
                                     email: '',
                                     password: '',
-                                    confirmPassword: '',
-                                    //imageUrl: '',
+
                                 }}
-                                onSubmit={(values) => register(values)}
+                                onSubmit={(values) => signIn(values)}
                             >
                                 {({ handleChange, handleBlur, handleSubmit, values }) => (
                                     <View style={{ marginBottom: '15%', paddingHorizontal: 20 }}>
 
-                                       
+
                                         <InputTxt
                                             placeholder={"Email"}
                                             onChangeText={handleChange('email')}
@@ -174,11 +267,10 @@ export default function RegisterScreen() {
                                             initialValue={values.password}
                                             secury={true}
                                         />
-                                       
+
                                         <Boton
-                                            onPress={() => console.log("hey")}
+                                            onPress={handleSubmit}
                                             text="Login"
-                                        //addstyle={{justifyContent: 'center'}}
                                             styled="btnRegister"
                                         />
 
@@ -187,18 +279,18 @@ export default function RegisterScreen() {
                                 )}
                             </Formik>
 
-                            
+
                         </View>
                         <View style={styles.footerModal}>
-                            <Text style={[styles.txtBienvenidaRegister, {fontSize: 16}]}>Don't have an Account? {' '}
-                                    <Text 
+                            <Text style={[styles.txtBienvenidaRegister, { fontSize: 16 }]}>Don't have an Account? {' '}
+                                <Text
                                     style={styles.txtURL}
-                                    onPress={()=>{
+                                    onPress={() => {
                                         setLoginVisible(false)
                                         setRegisterVisible(true)
 
                                     }}
-                                    >Register</Text>
+                                >Register</Text>
                             </Text>
                         </View>
 
@@ -272,12 +364,12 @@ const styles = StyleSheet.create({
         flex: 0.65,
         //backgroundColor: 'yellow'
     },
-    footerModal:{
-        flex: 0.15, 
-        justifyContent: "center", 
+    footerModal: {
+        flex: 0.15,
+        justifyContent: "center",
         alignItems: "center"
     },
-    txtURL:{
+    txtURL: {
         color: "#EF5858",
         fontSize: 16,
     },
