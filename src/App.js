@@ -1,13 +1,14 @@
 import React from "react";
 import { Dimensions, TextInput, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import AppBottomNavigator from "./AppBottomNavigator";
 import RegisterScreen from "./screen/RegisterLogin/RegisterScreen";
 
 const WIDTH = Dimensions.get('screen').width;
 
 export default function App() {
     return (
-       <RegisterScreen/>
+      <AppBottomNavigator/>
     );
 }
 /*
